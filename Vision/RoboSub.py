@@ -54,3 +54,43 @@ class challenge:
         cv2.destroyAllWindows()
 
 
+    def GetCentroidLocation(self, pub):
+        cap = cv2.VideoCapture(0)
+
+        while True:
+            #success is the return value to tell us abt the frames in the video
+            success, frame = cap.read()
+            width = int(cap.get(3))
+            height = int(cap.get(4))
+            #convert frame into hsv values
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+            #define upper and lower bound for the colour blue
+            lower_blue = np.array([100, 100, 0])   #110, 50, 50 is default
+            upper_blue = np.array([130, 255, 255])
+            #generate the mask
+            mask = cv2.inRange(hsv,lower_blue, upper_blue)
+            #creates image with only blue within bound
+            result = cv2.bitwise_and(frame, frame, mask=mask) #bitwise and is to blend frame with frame using mask to only give us the pixels we care about 
+
+            #implementing centroiod
+            grey_image = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+            ret, thresh = cv2.threshold(grey_image,127,255,0)
+            moment = cv2.moments(thresh)
+            try:
+                centroidX = int(moment["m10"] / moment["m00"])
+                centroidY = int(moment["m01"] / moment["m00"])
+                pub.publish(str(centroidX))
+                pub.publish(str(centroidY))
+            except:
+                pub.publish("Centroid Missing")
+                   
+     
+
+            if cv2.waitKey(1) & 0xff == ord('q'):
+                break
+
+        cap.release()
+        
+
+
