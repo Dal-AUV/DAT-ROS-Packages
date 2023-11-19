@@ -2,6 +2,8 @@
 # date: Oct 22, 2023
 # updated: Oct 29, 2023
 #          finish the first step, be able to detect orange objects, adding the contour with the label
+# updated: Nov 12, 2023
+#          added the coordinates and the angle of the centroid, the angle is from the horizontal, waiting to change to from the vertical
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
